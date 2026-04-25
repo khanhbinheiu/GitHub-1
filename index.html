@@ -1,32 +1,997 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open Source Software Development</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSE 454 — Open Source Software Development</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0e14;
+      --surface: #0f1520;
+      --border: #1e2d40;
+      --green: #39d353;
+      --cyan: #58c9f3;
+      --amber: #f0a500;
+      --red: #ff5f6d;
+      --text: #c9d1d9;
+      --muted: #6e7f96;
+      --white: #f0f6fc;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(57, 211, 83, .04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(57, 211, 83, .04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 20, .85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 56px;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    .logo-badge {
+      background: var(--green);
+      color: #000;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 3px;
+      letter-spacing: .08em;
+    }
+
+    .logo-text {
+      color: var(--white);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: .05em;
+    }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: .06em;
+      transition: color .2s;
+    }
+
+    nav a:hover {
+      color: var(--cyan);
+    }
+
+    .header-tag {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .header-tag span {
+      color: var(--amber);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding: 6rem 2.5rem 5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      color: var(--green);
+      font-size: 11px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(57, 211, 83, .25);
+      padding: 4px 12px;
+      border-radius: 2px;
+      animation: fadeUp .6s ease both;
+    }
+
+    .hero-eyebrow::before {
+      content: '▶';
+      font-size: 9px;
+      animation: blink 1.2s step-end infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0
+      }
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.8rem, 6vw, 4.8rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.1;
+      letter-spacing: -.02em;
+      animation: fadeUp .7s .1s ease both;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--green);
+    }
+
+    .hero-sub {
+      margin-top: 1.5rem;
+      font-size: 13px;
+      color: var(--muted);
+      max-width: 560px;
+      animation: fadeUp .7s .2s ease both;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+      animation: fadeUp .7s .3s ease both;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .meta-value {
+      font-size: 13px;
+      color: var(--cyan);
+    }
+
+    /* ── TERMINAL BLOCK ── */
+    .terminal {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto 5rem;
+      padding: 0 2.5rem;
+      animation: fadeUp .7s .4s ease both;
+    }
+
+    .terminal-window {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot-r {
+      background: #ff5f57;
+    }
+
+    .dot-y {
+      background: #ffbd2e;
+    }
+
+    .dot-g {
+      background: #28c840;
+    }
+
+    .terminal-title {
+      margin-left: .5rem;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .terminal-body {
+      padding: 1.5rem;
+      font-size: 13px;
+      line-height: 2;
+    }
+
+    .t-line {
+      display: flex;
+      gap: .75rem;
+    }
+
+    .t-prompt {
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    .t-cmd {
+      color: var(--white);
+    }
+
+    .t-comment {
+      color: var(--muted);
+    }
+
+    .t-out {
+      color: var(--cyan);
+      padding-left: 1.3rem;
+    }
+
+    .t-blank {
+      height: .75rem;
+    }
+
+    /* ── SECTION LAYOUT ── */
+    section {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2.5rem 5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .section-num {
+      color: var(--green);
+      font-size: 11px;
+      letter-spacing: .1em;
+    }
+
+    h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -.01em;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── TOPIC CARDS ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .card {
+      background: var(--surface);
+      padding: 1.5rem;
+      transition: background .2s;
+      cursor: default;
+    }
+
+    .card:hover {
+      background: #131d2b;
+    }
+
+    .card-icon {
+      font-size: 1.4rem;
+      margin-bottom: .75rem;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: .4rem;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── WORKFLOW ── */
+    .workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .wf-step {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .wf-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .wf-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    .wf-connector {
+      width: 2px;
+      flex: 1;
+      min-height: 32px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    .wf-content {
+      padding-bottom: 2rem;
+    }
+
+    .wf-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      padding-top: 6px;
+      margin-bottom: .4rem;
+    }
+
+    .wf-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── CODE SNIPPET ── */
+    .snippet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      border-radius: 4px;
+      padding: 1.25rem 1.5rem;
+      font-size: 12px;
+      color: var(--cyan);
+      margin-top: .75rem;
+      overflow-x: auto;
+    }
+
+    .snippet .kw {
+      color: var(--amber);
+    }
+
+    .snippet .st {
+      color: var(--green);
+    }
+
+    .snippet .cm {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── LICENSE TABLE ── */
+    .lic-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .lic-table th {
+      text-align: left;
+      padding: .75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-weight: 400;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+
+    .lic-table td {
+      padding: .75rem 1rem;
+      border-bottom: 1px solid rgba(30, 45, 64, .5);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    .lic-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .lic-table tr:hover td {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 2px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .06em;
+    }
+
+    .badge-green {
+      background: rgba(57, 211, 83, .15);
+      color: var(--green);
+    }
+
+    .badge-amber {
+      background: rgba(240, 165, 0, .15);
+      color: var(--amber);
+    }
+
+    .badge-red {
+      background: rgba(255, 95, 109, .15);
+      color: var(--red);
+    }
+
+    /* ── TOOLS GRID ── */
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+
+    .tool-tag {
+      border: 1px solid var(--border);
+      padding: .4rem 1rem;
+      border-radius: 3px;
+      font-size: 12px;
+      color: var(--text);
+      transition: border-color .2s, color .2s;
+    }
+
+    .tool-tag:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    /* ── QUOTE ── */
+    .quote-block {
+      border-left: 3px solid var(--amber);
+      padding: 1.25rem 1.5rem;
+      background: rgba(240, 165, 0, .04);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .quote-text {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--white);
+      line-height: 1.6;
+    }
+
+    .quote-attr {
+      margin-top: .75rem;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .05em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color .2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--cyan);
+    }
+
+    .footer-copy {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .footer-copy span {
+      color: var(--green);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate {
+      animation: fadeUp .6s ease both;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      max-width: 900px;
+      margin: 0 auto 5rem;
+      padding: 0 2.5rem;
+    }
+
+    .divider hr {
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+  </style>
 </head>
+
 <body>
-    <header>
-        <h1>Open Source Software Development</h1>
-        <p>Welcome to our open source software development community.</p>
-    </header>
-    <main>
-        <section>
-            <h2>What is Open Source?</h2>
-            <p>Open source software is software with source code that anyone can inspect, modify, and enhance.</p>
-        </section>
-        <section>
-            <h2>Benefits of Open Source</h2>
-            <ul>
-                <li>Collaboration and innovation.</li>
-                <li>Higher quality and more secure software.</li>
-                <li>Reduced costs.</li>
-            </ul>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 Open Source Community</p>
-       <p>Current Date and Time: 2026-04-25 00:56:15 UTC</p>
-    </footer>
+
+  <!-- ═══════════════ HEADER ═══════════════ -->
+  <header>
+    <div class="header-logo">
+      <span class="logo-badge">CSE 454</span>
+      <span class="logo-text">Open Source Software Development</span>
+    </div>
+
+    <nav>
+      <a href="#topics">Topics</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#licenses">Licenses</a>
+      <a href="#tools">Tools</a>
+    </nav>
+
+    <span class="header-tag">semester <span>Spring 2026</span></span>
+  </header>
+
+
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <div class="hero">
+    <div class="hero-eyebrow">Open Source Software Development</div>
+    <h1>Build software<br /><em>together</em>, in the open.</h1>
+    <p class="hero-sub">
+      Learn how real-world collaborative software is built — from forking a repo and submitting your first pull request,
+      to understanding licensing, governance, and community dynamics.
+    </p>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Course</span>
+        <span class="meta-value">CSE 454</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Credits</span>
+        <span class="meta-value">3 units</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Primary VCS</span>
+        <span class="meta-value">Git / GitHub</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Lab</span>
+        <span class="meta-value">Weekly exercises</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ TERMINAL ═══════════════ -->
+  <div class="terminal">
+    <div class="terminal-window">
+      <div class="terminal-bar">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+        <span class="terminal-title">bash — cse454-lab</span>
+      </div>
+      <div class="terminal-body">
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">git clone
+            https://github.com/your-username/cse454-lab.git</span></div>
+        <div class="t-out">Cloning into 'cse454-lab'...</div>
+        <div class="t-blank"></div>
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">cd cse454-lab &amp;&amp; git checkout -b
+            feature/my-contribution</span></div>
+        <div class="t-out">Switched to a new branch 'feature/my-contribution'</div>
+        <div class="t-blank"></div>
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">git add index.html &amp;&amp; git commit
+            -m "feat: add course landing page"</span></div>
+        <div class="t-out">[feature/my-contribution a3f82d1] feat: add course landing page</div>
+        <div class="t-blank"></div>
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">git push origin
+            feature/my-contribution</span></div>
+        <div class="t-out">✓ Branch pushed — open a Pull Request on GitHub</div>
+        <div class="t-blank"></div>
+        <div class="t-line"><span class="t-comment"># Welcome to open source development 🎉</span></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════ TOPICS ═══════════════ -->
+  <section id="topics">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Course Topics</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">🌿</div>
+        <div class="card-title">Version Control with Git</div>
+        <div class="card-desc">Branching strategies, rebasing, cherry-picking, merge conflict resolution, and
+          maintaining a clean commit history.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔀</div>
+        <div class="card-title">Pull Request Workflow</div>
+        <div class="card-desc">Forking repositories, writing meaningful PRs, code review etiquette, and CI/CD
+          integration gates.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚖️</div>
+        <div class="card-title">Open Source Licensing</div>
+        <div class="card-desc">Permissive vs copyleft licenses, GPL, MIT, Apache 2.0, Creative Commons, and choosing the
+          right license.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏛️</div>
+        <div class="card-title">Project Governance</div>
+        <div class="card-desc">BDFL, meritocracy, foundations (Apache, Linux), codes of conduct, and decision-making in
+          OSS communities.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🐛</div>
+        <div class="card-title">Issue Tracking</div>
+        <div class="card-desc">Writing quality bug reports, triaging issues, labeling, milestones, and working with
+          project maintainers.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📦</div>
+        <div class="card-title">Package Ecosystems</div>
+        <div class="card-desc">npm, pip, Maven, crates.io — understanding dependency graphs, semantic versioning, and
+          supply-chain security.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <div class="card-title">CI / CD Pipelines</div>
+        <div class="card-desc">Automating tests, linting, and deployment with GitHub Actions, automated security
+          scanning, and release pipelines.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📝</div>
+        <div class="card-title">Documentation</div>
+        <div class="card-desc">Writing READMEs, CONTRIBUTING guides, changelogs (Keep a Changelog), and API docs that
+          attract contributors.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════ WORKFLOW ═══════════════ -->
+  <section id="workflow">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Contribution Workflow</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-line">
+          <div class="wf-dot">01</div>
+          <div class="wf-connector"></div>
+        </div>
+        <div class="wf-content">
+          <div class="wf-title">Fork &amp; Clone</div>
+          <div class="wf-desc">Fork the upstream repository to your account, then clone your fork locally. Add the
+            original as an <code>upstream</code> remote.</div>
+          <div class="snippet"><span class="kw">git</span> remote add upstream https://github.com/org/repo.git</div>
+        </div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-line">
+          <div class="wf-dot">02</div>
+          <div class="wf-connector"></div>
+        </div>
+        <div class="wf-content">
+          <div class="wf-title">Create a Feature Branch</div>
+          <div class="wf-desc">Never commit directly to <code>main</code>. Name branches descriptively using conventions
+            like <code>feat/</code>, <code>fix/</code>, or <code>docs/</code>.</div>
+          <div class="snippet"><span class="kw">git</span> checkout -b <span class="st">feat/add-dark-mode</span></div>
+        </div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-line">
+          <div class="wf-dot">03</div>
+          <div class="wf-connector"></div>
+        </div>
+        <div class="wf-content">
+          <div class="wf-title">Commit with Conventional Commits</div>
+          <div class="wf-desc">Write structured commit messages so changelogs and release notes can be generated
+            automatically.</div>
+          <div class="snippet"><span class="cm"># type(scope): short description</span><br /><span
+              class="kw">feat</span>(ui): add dark mode toggle to navbar<br /><span class="kw">fix</span>(auth): handle
+            expired JWT gracefully<br /><span class="kw">docs</span>: update CONTRIBUTING guide</div>
+        </div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-line">
+          <div class="wf-dot">04</div>
+          <div class="wf-connector"></div>
+        </div>
+        <div class="wf-content">
+          <div class="wf-title">Open a Pull Request</div>
+          <div class="wf-desc">Push your branch and open a PR. Fill in the template: what, why, how to test. Link the
+            relevant issue with <code>Closes #42</code>.</div>
+        </div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-line">
+          <div class="wf-dot">05</div>
+          <div class="wf-connector" style="display:none"></div>
+        </div>
+        <div class="wf-content">
+          <div class="wf-title">Review, Revise, Merge</div>
+          <div class="wf-desc">Address reviewer feedback, squash fixup commits, and wait for CI to pass. A maintainer
+            merges — your code is now part of the project! 🎉</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════ LICENSES ═══════════════ -->
+  <section id="licenses">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Common Licenses</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <table class="lic-table">
+      <thead>
+        <tr>
+          <th>License</th>
+          <th>Type</th>
+          <th>Copyleft</th>
+          <th>Patent Grant</th>
+          <th>Used by</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>MIT</td>
+          <td><span class="badge badge-green">Permissive</span></td>
+          <td>—</td>
+          <td>—</td>
+          <td>React, jQuery, Rails</td>
+        </tr>
+        <tr>
+          <td>Apache 2.0</td>
+          <td><span class="badge badge-green">Permissive</span></td>
+          <td>—</td>
+          <td>✓</td>
+          <td>Android, Kubernetes</td>
+        </tr>
+        <tr>
+          <td>BSD 3-Clause</td>
+          <td><span class="badge badge-green">Permissive</span></td>
+          <td>—</td>
+          <td>—</td>
+          <td>Go, FreeBSD</td>
+        </tr>
+        <tr>
+          <td>GPL v3</td>
+          <td><span class="badge badge-red">Copyleft</span></td>
+          <td>Strong</td>
+          <td>✓</td>
+          <td>Linux, GCC, WordPress</td>
+        </tr>
+        <tr>
+          <td>LGPL v3</td>
+          <td><span class="badge badge-amber">Weak Copyleft</span></td>
+          <td>Library</td>
+          <td>✓</td>
+          <td>GTK, FFmpeg</td>
+        </tr>
+        <tr>
+          <td>MPL 2.0</td>
+          <td><span class="badge badge-amber">Weak Copyleft</span></td>
+          <td>File-level</td>
+          <td>✓</td>
+          <td>Firefox, Servo</td>
+        </tr>
+        <tr>
+          <td>AGPL v3</td>
+          <td><span class="badge badge-red">Copyleft</span></td>
+          <td>Network use</td>
+          <td>✓</td>
+          <td>MongoDB (old), Mastodon</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 2rem;">
+      <div class="quote-block">
+        <p class="quote-text">"A license is a promise from the author to every user — choose yours like a contract,
+          because it is one."</p>
+        <p class="quote-attr">— OSS Governance Principles</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════ TOOLS ═══════════════ -->
+  <section id="tools">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Ecosystem &amp; Tools</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <p style="color: var(--muted); font-size: 12px; margin-bottom: 1.5rem;">Technologies and platforms you'll encounter
+      throughout the course.</p>
+
+    <div class="tools">
+      <span class="tool-tag">Git</span>
+      <span class="tool-tag">GitHub</span>
+      <span class="tool-tag">GitHub Actions</span>
+      <span class="tool-tag">GitLab CI</span>
+      <span class="tool-tag">npm</span>
+      <span class="tool-tag">pip / PyPI</span>
+      <span class="tool-tag">Docker</span>
+      <span class="tool-tag">Markdown</span>
+      <span class="tool-tag">SPDX</span>
+      <span class="tool-tag">Dependabot</span>
+      <span class="tool-tag">ESLint / Prettier</span>
+      <span class="tool-tag">Conventional Commits</span>
+      <span class="tool-tag">Semantic Release</span>
+      <span class="tool-tag">Codecov</span>
+      <span class="tool-tag">SonarCloud</span>
+      <span class="tool-tag">REUSE Tool</span>
+      <span class="tool-tag">OpenSSF Scorecard</span>
+      <span class="tool-tag">CLA Assistant</span>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer>
+    <div class="footer-top">
+      <span class="logo-badge">CSE 454</span>
+      <div class="footer-links">
+        <a href="#">Syllabus</a>
+        <a href="#">GitHub Org</a>
+        <a href="#">Discord</a>
+        <a href="#">Office Hours</a>
+        <a href="#">Gradebook</a>
+      </div>
+    </div>
+    <p class="footer-copy">
+      CSE 454 Open Source Software Development &nbsp;·&nbsp;
+      Built with <span>♥</span> and open-source principles &nbsp;·&nbsp;
+      Licensed under <span>MIT</span>
+    </p>
+    <p class="footer-copy" style="margin-top: .25rem;">
+      "Given enough eyeballs, all bugs are shallow." — Linus's Law
+    </p>
+  </footer>
+
 </body>
+
 </html>
